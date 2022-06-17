@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Discord.Net" />
+    <None Remove="Services\" />
+    <None Remove="Modules\" />
+    <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Microsoft.Extensions.Configuration.Json" />
+    <None Remove="Microsoft.Extensions.Configuration.Binder" />
+    <None Remove="PreconditionAttributes\" />
+    <None Remove="Utilities\" />
+    <None Remove="AutocompleteHandlers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.6.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Modules\" />
+    <Folder Include="PreconditionAttributes\" />
+    <Folder Include="Utilities\" />
+    <Folder Include="AutocompleteHandlers\" />
+  </ItemGroup>
+</Project>
