@@ -1,0 +1,17 @@
+﻿{
+  "discord": {
+    "token": "MzUzMjMyMTQ5MTA2OTE3Mzg3.WambEw.KZoh66EbxanwvcTrRyxgx05JoXk"
+  },
+  "chans": {
+    "wallOfEpicness": "700377179808071721",
+    "RoundTable": "",
+    "populace": "722836027558854737"
+  },
+  "database": {
+    "userId": "yourUserId",
+    "password": "",
+    "server": "127.0.0.1",
+    "port": "5432",
+    "database": "pfc"
+  }
+}
