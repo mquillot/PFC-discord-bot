@@ -1,17 +1,17 @@
 ﻿{
   "discord": {
-    "token": "[replace with you token]"
+    "token": "MzUzMjMyMTQ5MTA2OTE3Mzg3.WambEw.KZoh66EbxanwvcTrRyxgx05JoXk"
   },
   "chans": {
-    "wallOfEpicness": "[replace with a discord channel ID]",
-    "RoundTable": "[replace with a discord channel ID]",
-    "populace": "[replace with a discord role ID]"
+    "wallOfEpicness": "700377179808071721",
+    "RoundTable": "",
+    "populace": "722836027558854737"
   },
   "database": {
-    "userId": "[replace with your pgsql user id]",
-    "password": "[replace with you password user id]",
-    "server": "[replace with your pgsql server's IP]",
-    "port": "[replace with the listened port of your pgsql server]",
-    "database": "[replace with the name of your database]"
+    "userId": "idolon",
+    "password": "",
+    "server": "127.0.0.1",
+    "port": "5432",
+    "database": "pfc"
   }
 }
