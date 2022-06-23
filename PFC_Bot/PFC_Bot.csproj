@@ -32,7 +32,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="settings %28autre copie%29.json" />
-    <Content Remove="settings.json" />
-    <Content Remove="settings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
