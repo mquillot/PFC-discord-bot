@@ -114,14 +114,15 @@ namespace PFC_Bot.Services
 
             FightInteraction fightInteraction = new FightInteraction(fight, component.User.Id, true);
 
-
+#if DEBUG
+#else
             // Est-ce que les deux joueurs sont les mêmes ?
-            //if (user_defender.Id == user_attacker.Id)
-            //{
-            //    await RespondAsync($"Vous ne pouvez pas vous auto-attaquer", ephemeral: true);
-            //    return;
-            //}
-
+            if (fight.Defender.Id == fight.Attacker.Id)
+            {
+                await RespondAsync($"Vous ne pouvez pas vous auto-attaquer", ephemeral: true);
+                return;
+            }
+#endif
 
             if (fight.Attacker.Freeze)
             {
@@ -383,12 +384,15 @@ namespace PFC_Bot.Services
             // Récupérer l'attaquant ?
             UserEntity user_attacker = _db.Users.SingleOrDefault(e => e.Id_Discord == Context.User.Id);
 
+#if DEBUG
+#else
             // Est-ce que les deux joueurs sont les mêmes ?
-            //if (user_defender.Id == user_attacker.Id)
-            //{
-            //    await RespondAsync($"Vous ne pouvez pas vous auto-attaquer", ephemeral: true);
-            //    return;
-            //}
+            if (user_defender.Id == user_attacker.Id)
+            {
+                await RespondAsync($"Vous ne pouvez pas vous auto-attaquer", ephemeral: true);
+                return;
+            }
+#endif
 
             // Est-ce que les deux personnes ont déjà un combat ?
             FightEntity fight = _db.Fights.SingleOrDefault(e =>
@@ -478,6 +482,7 @@ namespace PFC_Bot.Services
             {
                 used_username = Context.User.Username;
             }
+
             UserEntity new_user = new UserEntity();
             new_user.Id_Discord = Context.User.Id;
             new_user.Pseudo = used_username;
