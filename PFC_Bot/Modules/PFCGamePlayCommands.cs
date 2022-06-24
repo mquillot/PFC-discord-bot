@@ -103,7 +103,11 @@ namespace PFC_Bot.Services
         [ComponentInteraction("rejouer")]
         public async Task ReplayButtonHandler()
         {
+            
             SocketMessageComponent component = (SocketMessageComponent)this.Context.Interaction;
+
+            if (!component.HasResponded)
+                await component.DeferAsync();
 
             _db.Users.ToList();
             FightEntity fight = this.SearchFightOfComponentUtility(component, true);
@@ -119,19 +123,24 @@ namespace PFC_Bot.Services
             //}
 
 
-            // Est-ce que les deux personnes ont déjà un combat ?
+            if (fight.Attacker.Freeze)
+            {
+                await RespondAsync("Le joueur a gelé son compte.");
+                return;
+            }
+
             FightEntity fightSearch = _db.Fights.SingleOrDefault(e =>
-                e.Attacker.Id == fight.Defender.Id &&
-                e.Defender.Id == fight.Attacker.Id &&
-                e.choice_attacker == null &&
-                e.choice_defender == null &&
+                ((e.Attacker.Id == fight.Defender.Id && e.Defender.Id == fight.Attacker.Id) || (e.Defender.Id == fight.Defender.Id && e.Attacker.Id == fight.Attacker.Id)) &&
+                !(e.choice_attacker != null && e.choice_defender != null) &&
                 e.Winner == null &&
                 e.Canceled == false
                 );
-            
-            if(fight.Attacker.Freeze)
+
+            IMessageChannel channelAttacker = await getMessageChannelUtility(fight.Defender.Id_Discord, null, true);
+
+            if (fightSearch != null)
             {
-                await RespondAsync("Le joueur a gelé son compte.");
+                await channelAttacker.SendMessageAsync($"Vous avez déjà un combat avec {fight.Attacker.Pseudo}", components: _removeBuilder.Build());
                 return;
             }
 
@@ -141,15 +150,6 @@ namespace PFC_Bot.Services
             newFight.Posting_Date = DateTime.Now;
             newFight.Ending_Date = DateTime.Now;
 
-
-
-            IMessageChannel channelAttacker = await getMessageChannelUtility(newFight.Attacker.Id_Discord, null, true);
-
-            if (fightSearch != null)
-            {
-                await channelAttacker.SendMessageAsync($"Vous avez déjà un combat avec {fight.Attacker.Pseudo}", components: _removeBuilder.Build());
-                return;
-            }
 
 
             var embed_builder_attacker = new EmbedBuilder()
@@ -392,10 +392,8 @@ namespace PFC_Bot.Services
 
             // Est-ce que les deux personnes ont déjà un combat ?
             FightEntity fight = _db.Fights.SingleOrDefault(e =>
-                e.Attacker.Id == user_attacker.Id &&
-                e.Defender.Id == user_defender.Id &&
-                e.choice_attacker == null &&
-                e.choice_defender == null &&
+                ((e.Attacker.Id == user_attacker.Id && e.Defender.Id == user_defender.Id) || (e.Defender.Id == user_attacker.Id && e.Attacker.Id == user_defender.Id)) &&
+                !(e.choice_attacker != null && e.choice_defender != null) &&
                 e.Winner == null &&
                 e.Canceled == false
                 );
