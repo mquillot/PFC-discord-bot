@@ -39,6 +39,7 @@ namespace PFC_Bot
 
 				// setup logging and the ready event
 				_client.Log += LogAsync;
+				_client.JoinedGuild += JoinedGuild;
 				
 				_commands.Log += LogAsync;
 				_client.Ready += ReadyAsync;
@@ -62,6 +63,11 @@ namespace PFC_Bot
 
 		}
 
+		private static Task JoinedGuild(SocketGuild socket)
+        {
+			return Task.CompletedTask;
+		}
+
 		private Task LogAsync(LogMessage msg)
         {
 			Console.WriteLine(msg.ToString());
@@ -81,6 +87,7 @@ namespace PFC_Bot
 				.AddSingleton<DiscordSocketClient>(new DiscordSocketClient(configSocket))
 				.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
 				.AddSingleton<CommandHandler>()
+				.AddSingleton <IConfigurationRoot>(_settings)
 				.AddDbContext<ApplicationDbContext>(
 					options => options.UseNpgsql($"Server={_settings.GetValue<String>("database:server")};Port={_settings.GetValue<String>("database:port")};Database={_settings.GetValue<String>("database:database")};User Id={_settings.GetValue<String>("database:userId")};Password={_settings.GetValue<String>("database:password")};Include Error Detail=true")
 					)
