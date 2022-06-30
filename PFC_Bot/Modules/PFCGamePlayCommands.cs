@@ -781,8 +781,23 @@ namespace PFC_Bot.Services
         public async Task MyProfile()
         {
             UserEntity userMe = _db.Users.SingleOrDefault(e => e.Id_Discord == Context.User.Id);
+
+            List<UserEntity> users = _db.Users.OrderByDescending(x => x.Score).ToList();
+            int myposition = 0;
+
+            for(int i=0; i < users.Count; i++)
+            {
+                if (userMe == users[i])
+                {
+                    myposition = i + 1;
+                    break;
+                }
+            }
+
+
             string notificationPart = userMe.Notification == true ? ":white_check_mark:": ":white_large_square:";
             string freezePart = userMe.Freeze == true ? ":white_check_mark:": ":white_large_square:";
+            string positionText = myposition == 1 ? "Position : 1er" : "Position : {myposition}ème";
             EmbedBuilder builder = new EmbedBuilder()
             {
                 Color = Color.Green,
@@ -790,6 +805,7 @@ namespace PFC_Bot.Services
                 Description = $"Mon pseudo : {userMe.Pseudo}\n" +
                 $"Score : {userMe.Score}\n\n" +
                 $":chicken: {userMe.Money}\n\n" +
+                positionText + "\n" +
                 $"Notifications : {notificationPart}\n" +
                 $"Compte gelé ? {freezePart}\n" +
                 $"Max victoires d'affilé : {userMe.Max_Win_In_A_Row}\n" +
