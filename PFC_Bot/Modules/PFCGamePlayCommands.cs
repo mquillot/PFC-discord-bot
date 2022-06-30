@@ -797,7 +797,7 @@ namespace PFC_Bot.Services
 
             string notificationPart = userMe.Notification == true ? ":white_check_mark:": ":white_large_square:";
             string freezePart = userMe.Freeze == true ? ":white_check_mark:": ":white_large_square:";
-            string positionText = myposition == 1 ? "Position : 1er" : "Position : {myposition}ème";
+            string positionText = myposition == 1 ? "Position : 1er" : $"Position : {myposition}ème";
             EmbedBuilder builder = new EmbedBuilder()
             {
                 Color = Color.Green,
