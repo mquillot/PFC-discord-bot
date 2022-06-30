@@ -12,6 +12,7 @@ using PFC_Bot.PreconditionAttributes;
 using PFC_Bot.Services;
 using PFC_Bot.Utilities;
 using PFC_Bot.AutocompleteHandlers;
+using Microsoft.Extensions.Configuration;
 
 namespace PFC_Bot.Services
 {
@@ -25,6 +26,7 @@ namespace PFC_Bot.Services
         private CommandHandler _handler;
         private readonly ApplicationDbContext _db;
         private readonly DiscordSocketClient _discord;
+        private IConfigurationRoot _settings;
 
         private ComponentBuilder _choicesBuilder;
         private ComponentBuilder _waitingOtherBuilder;
@@ -33,11 +35,12 @@ namespace PFC_Bot.Services
         private ComponentBuilder _replayBuilder;
 
         // constructor injection is also a valid way to access the dependecies
-        public PFCGamePlayCommands(DiscordSocketClient discord, CommandHandler handler, ApplicationDbContext db)
+        public PFCGamePlayCommands(DiscordSocketClient discord, CommandHandler handler, IConfigurationRoot settings,  ApplicationDbContext db)
         {
             _handler = handler;
             _db = db;
             _discord = discord;
+            _settings = settings;
 
             _choicesBuilder = new ComponentBuilder()
                 .WithButton("pierre", "jouer:pierre", style: ButtonStyle.Secondary, emote: new Emoji("\U0000270A"))
@@ -267,9 +270,48 @@ namespace PFC_Bot.Services
                 // Un gagnant ?
                 if (fight.Winner != null)
                 {
+                    UserEntity looser = fight.Attacker == fight.Winner ? fight.Attacker : fight.Defender;
                     fight.Winner.Money += 1;
                     fight.Winner.Score += 5;
+
+
+
+                    // Loose in a row 
+                    fight.Winner.Defeat_In_A_Row = 0;
+                    looser.Defeat_In_A_Row = looser.Defeat_In_A_Row + 1;
+                    looser.Max_Defeat_In_A_Row = looser.Defeat_In_A_Row > looser.Max_Defeat_In_A_Row ?
+                        looser.Defeat_In_A_Row :
+                        looser.Max_Defeat_In_A_Row;
+
+                    // Wins in a row
+                    looser.Win_In_A_Row = 0;
+                    fight.Winner.Win_In_A_Row = fight.Winner.Win_In_A_Row + 1;
+                    fight.Winner.Max_Win_In_A_Row = looser.Win_In_A_Row > looser.Max_Win_In_A_Row ?
+                        fight.Winner.Win_In_A_Row :
+                        fight.Winner.Max_Win_In_A_Row;
+
+
                     _db.SaveChanges();
+
+                    // TODO: Est-ce que la personne a changé de rang ?
+
+                    // TODO: Est-ce que la personne a reçu un sort ?
+
+                    // Est-ce que la personne a perdu plusieurs fois d'affilé ? 5, 10 ...
+                    if(looser.Defeat_In_A_Row % 2 == 0)
+                    {
+                        // send a message
+                        ITextChannel chan = (ITextChannel) await _discord.GetChannelAsync(_settings.GetValue<ulong>("chans:wallOfEpicness"));
+                        await chan.SendMessageAsync($"<@{looser.Id_Discord}> a perdu {looser.Defeat_In_A_Row} fois d'affilé ! :sob:");
+                    }
+
+                    if (fight.Winner.Win_In_A_Row % 2 == 0)
+                    {
+                        // send a message
+                        ITextChannel chan = (ITextChannel)await _discord.GetChannelAsync(_settings.GetValue<ulong>("chans:wallOfEpicness"));
+                        await chan.SendMessageAsync($"<@{fight.Winner.Id_Discord}> a gagné {fight.Winner.Win_In_A_Row} fois d'affilé ! :muscle:");
+                    }
+
 
                     string descriptionToWinner = "Vous avez gagné ! :partying_face:";
                     string descriptionToLooser = "Vous avez perdu ... :crying_cat_face:";
@@ -525,11 +567,15 @@ namespace PFC_Bot.Services
             {
                 if(connectedList.Contains(user.Id_Discord)) {
                     connectedUsernames += ":green_circle: ";
-                    connectedUsernames += $"{user.Pseudo}\n";
+                    connectedUsernames += Context.Guild == null ?
+                        $"{user.Pseudo}\n" :
+                        $"<@{user.Id_Discord}>\n";
                 }
                 else
                 {
-                    usernames += $"{user.Pseudo}\n";
+                    usernames += Context.Guild == null ?
+                        $"{user.Pseudo}\n" :
+                        $"<@{user.Id_Discord}>\n";
                 }
             }
 
@@ -742,7 +788,9 @@ namespace PFC_Bot.Services
                 $"Score : {userMe.Score}\n\n" +
                 $":chicken: {userMe.Money}\n\n" +
                 $"Notifications : {notificationPart}\n" +
-                $"Compte gelé ? {freezePart}\n"
+                $"Compte gelé ? {freezePart}\n" +
+                $"Max victoires d'affilé : {userMe.Max_Win_In_A_Row}\n" +
+                $"Max défaites d'affilé : {userMe.Max_Defeat_In_A_Row}"
             };
 
             await RespondAsync("", embed: builder.Build());
@@ -1078,6 +1126,9 @@ namespace PFC_Bot.Services
                 });
             }
         }
+
+
+
 
     }
 

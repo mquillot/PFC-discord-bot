@@ -68,6 +68,15 @@ namespace PFC_Bot
         [Column("signature_url")]
         public string Signature_Url { get; set; }
 
+        [Column("defeat_in_a_row")]
+        public int Defeat_In_A_Row { get; set; }
+        [Column("max_defeat_in_a_row")]
+        public int Max_Defeat_In_A_Row { get; set; }
+
+        [Column("win_in_a_row")]
+        public int Win_In_A_Row { get; set; }
+        [Column("max_win_in_a_row")]
+        public int Max_Win_In_A_Row { get; set; }
 
         [Column("notification")]
         public bool Notification { get; set; }
