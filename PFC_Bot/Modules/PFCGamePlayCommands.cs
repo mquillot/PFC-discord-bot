@@ -314,6 +314,8 @@ namespace PFC_Bot.Services
 
 
                     string descriptionToWinner = "Vous avez gagné ! :partying_face:";
+                    if (fight.Winner.Signature_Sentence != "" || fight.Winner.Signature_Url != "")
+                        descriptionToWinner += "\nVotre signature a bien été envoyée.";
                     string descriptionToLooser = "Vous avez perdu ... :crying_cat_face:";
                     string descriptionToAddToAttacker = attackerWins ?
                         descriptionToWinner : descriptionToLooser;
@@ -325,6 +327,7 @@ namespace PFC_Bot.Services
                     // Éditer le message de l'attaquant
                     channelAttacker = await getMessageChannelUtility(fight.Attacker.Id_Discord, null, true);
                     await ModifyDMEmbedMessage(channelAttacker, (ulong)fight.Id_Message_Attacker, descriptionToAddToAttacker);
+                    
 
                     // Éditer le message du défenseur
                     channelDefender = await getMessageChannelUtility(fight.Defender.Id_Discord, null, true);
@@ -902,6 +905,23 @@ namespace PFC_Bot.Services
 
             await RespondAsync("", embed: embedBuilder.Build(), ephemeral: true);
 
+            // TODO: envoyer un message (une notification) à l'utilisateur ciblé.
+
+            IMessageChannel channelTarget = await getMessageChannelUtility(targetUser.Id_Discord, null, true);
+
+
+            // TODO: envoyer un message sur le wallofepicness
+            Embed embedTarget = new EmbedBuilder()
+            {
+                Description = $"{user.Pseudo} vous a s0ckattaqué !"
+            }.Build();
+
+
+
+            await NotifyUser(targetUser, channelTarget, embedTarget);
+
+            ITextChannel chan = (ITextChannel)await _discord.GetChannelAsync(_settings.GetValue<ulong>("chans:wallOfEpicness"));
+            await chan.SendMessageAsync($"<@{user.Id_Discord}> a s0cattacké <@{targetUser.Id_Discord}> ! :sob:");
         }
 
 
