@@ -658,7 +658,7 @@ namespace PFC_Bot.Services
             //Console.Out.WriteLine($"Le nombre d'éléments : {fights.Count}");
             foreach(FightEntity fight in fights)
             {
-                string fightUrl = fight.Attacker == user ? fight.Jump_Url_Attacker: fight.Jump_Url_Defender;
+                string fightUrl = fight.Attacker.Id == user.Id ? fight.Jump_Url_Attacker: fight.Jump_Url_Defender;
                 //Console.Out.WriteLine($"{fight.Attacker.Id} : {fight.Attacker.Pseudo} ({fight.choice_attacker}) <=> {fight.Defender.Pseudo} ({fight.choice_defender})");
                 message += $"{fight.Attacker.Pseudo} <=> {fight.Defender.Pseudo} : [Lien vers le combat]({fightUrl})" + "\n";
             }
