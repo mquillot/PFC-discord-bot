@@ -118,9 +118,9 @@ namespace PFC_Bot
         public UserEntity Winner { get; set; }
 
         [Column("choice_attacker")]
-        public char? choice_attacker { get; set; }
+        public char? Choice_Attacker { get; set; }
         [Column("choice_defender")]
-        public char? choice_defender { get; set; }
+        public char? Choice_Defender { get; set; }
 
         [Column("id_message_attacker")]
         public ulong? Id_Message_Attacker { get; set; }
@@ -129,10 +129,10 @@ namespace PFC_Bot
 
 
         [Column("jump_url_attacker")]
-        public string Jump_Url_Attacker { get; set; }
+        public string? Jump_Url_Attacker { get; set; }
 
         [Column("jump_url_defender")]
-        public string Jump_Url_Defender { get; set; }
+        public string? Jump_Url_Defender { get; set; }
 
         [Column("canceled")]
         public Boolean Canceled { get; set; }
