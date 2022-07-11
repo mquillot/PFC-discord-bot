@@ -295,8 +295,6 @@ namespace PFC_Bot.Services
 
                     // TODO: Est-ce que la personne a changé de rang ?
 
-                    // TODO: Est-ce que la personne a reçu un sort ?
-
                     // Est-ce que la personne a perdu plusieurs fois d'affilé ? 5, 10 ...
                     if(looser.Defeat_In_A_Row % 2 == 0)
                     {
@@ -343,18 +341,21 @@ namespace PFC_Bot.Services
                         Color = Color.DarkerGrey,
                         Description = descriptionToSend
                     };
-                    await NotifyUser(fight.Attacker, channelAttacker, builder.Build());
+                    if(fight.Attacker.Id == fight.Winner.Id || fight.Winner.Signature_Sentence == "") 
+                        await NotifyUser(fight.Attacker, channelAttacker, builder.Build());
 
                     // Envoyer la signature du gagnant s'il y en a une
                     if (fight.Winner.Signature_Sentence != "" && fight.Winner.Signature_Url != "")
                     {
                         IMessageChannel channelSignature = fight.Winner == fight.Attacker ? channelDefender : channelAttacker;
+
+                        string linkMessageFight = fight.Winner.Id == fight.Attacker.Id ? fight.Jump_Url_Defender : fight.Jump_Url_Attacker;
                         var signatureEmbedBuilder = new EmbedBuilder()
                         {
                             //Optional color
                             Color = Color.Green,
                             Title = $"{fight.Winner.Pseudo} vous a défoncé",
-                            Description = $"{fight.Winner.Pseudo} vous a laissé une signature\n> {fight.Winner.Signature_Sentence}",
+                            Description = $"{fight.Winner.Pseudo} vous a laissé une signature\n> {fight.Winner.Signature_Sentence}\n[Lien vers le combat]({linkMessageFight})",
                             ImageUrl = fight.Winner.Signature_Url
                         };
 
