@@ -31,3 +31,20 @@ CREATE TABLE guilds (
     id_role_pillow_knight BIGINT,
     id_role_plebe BIGINT
     );
+
+ALTER TABLE users
+ALTER COLUMN signature_sentence
+SET DEFAULT '';
+
+ALTER TABLE users
+ALTER COLUMN signature_url
+SET DEFAULT '';
+
+UPDATE users SET signature_sentence = '';
+UPDATE users SET signature_url = '';
+
+ALTER TABLE users ADD COLUMN win_in_a_row INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN max_win_in_a_row INT DEFAULT 0;
+
+ALTER TABLE users ADD COLUMN defeat_in_a_row INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN max_defeat_in_a_row INT DEFAULT 0;

@@ -135,7 +135,7 @@ namespace PFC_Bot.Services
 
             FightEntity fightSearch = _db.Fights.SingleOrDefault(e =>
                 ((e.Attacker.Id == fight.Defender.Id && e.Defender.Id == fight.Attacker.Id) || (e.Defender.Id == fight.Defender.Id && e.Attacker.Id == fight.Attacker.Id)) &&
-                !(e.choice_attacker != null && e.choice_defender != null) &&
+                !(e.Choice_Attacker != null && e.Choice_Defender != null) &&
                 e.Winner == null &&
                 e.Canceled == false
                 );
@@ -214,14 +214,14 @@ namespace PFC_Bot.Services
 
 
             // L'attaquant n'a pas joué ?
-            if (fight.choice_attacker == null &&
+            if (fight.Choice_Attacker == null &&
                 fight.Id_Message_Attacker == component.Message.Id &&
                 component.User.Id == fight.Attacker.Id_Discord)
             {
 
                 // Update fight with choice
                 Console.Out.WriteLine(choice);
-                fight.choice_attacker = choice[0];
+                fight.Choice_Attacker = choice[0];
                 _db.SaveChanges();
 
 
@@ -254,15 +254,15 @@ namespace PFC_Bot.Services
 
 
             // L'attaquant a déjà joué mais pas le défenseur ?
-            else if (fight.choice_attacker != null
-                && fight.choice_defender == null
+            else if (fight.Choice_Attacker != null
+                && fight.Choice_Defender == null
                 && fight.Id_Message_Defender == component.Message.Id
                 && component.User.Id == fight.Defender.Id_Discord)
             {
                 // Update fight with choice
                 Console.Out.WriteLine("On a fait quelque chose");
                 Console.Out.WriteLine(choice);
-                fight.choice_defender = choice[0];
+                fight.Choice_Defender = choice[0];
                 string defenderDecisionDescription = $"Vous avez joué {choice}";
 
                 bool attackerWins = ResolveFightUtility(ref fight);
@@ -442,7 +442,7 @@ namespace PFC_Bot.Services
             // Est-ce que les deux personnes ont déjà un combat ?
             FightEntity fight = _db.Fights.SingleOrDefault(e =>
                 ((e.Attacker.Id == user_attacker.Id && e.Defender.Id == user_defender.Id) || (e.Defender.Id == user_attacker.Id && e.Attacker.Id == user_defender.Id)) &&
-                !(e.choice_attacker != null && e.choice_defender != null) &&
+                !(e.Choice_Attacker != null && e.Choice_Defender != null) &&
                 e.Winner == null &&
                 e.Canceled == false
                 );
@@ -649,7 +649,11 @@ namespace PFC_Bot.Services
         public async Task MyFights()
         {
             
-            List<FightEntity> fights = _db.Fights.Where(e => (e.Attacker.Id_Discord == Context.User.Id || e.Defender.Id_Discord == Context.User.Id) && (e.choice_attacker == null || e.choice_defender == null)).Take(20).ToList();
+            List<FightEntity> fights = _db.Fights.Where(
+                e =>
+                (e.Attacker.Id_Discord == Context.User.Id || e.Defender.Id_Discord == Context.User.Id && e.Jump_Url_Defender != null) &&
+                (e.Choice_Attacker == null || e.Choice_Defender == null)
+                ).Take(20).ToList();
             List<UserEntity> users = _db.Users.ToList();
 
             UserEntity user = _db.Users.SingleOrDefault(e => e.Id_Discord == Context.User.Id);
@@ -999,7 +1003,7 @@ namespace PFC_Bot.Services
             if(fightFinished)
             {
                 return _db.Fights.SingleOrDefault(e =>
-                    e.choice_defender.HasValue && e.choice_attacker.HasValue && (
+                    e.Choice_Defender.HasValue && e.Choice_Attacker.HasValue && (
                         e.Id_Message_Attacker == component.Message.Id &&
                         e.Attacker.Id_Discord == component.User.Id ||
                         e.Id_Message_Defender == component.Message.Id &&
@@ -1012,10 +1016,10 @@ namespace PFC_Bot.Services
                 return _db.Fights.SingleOrDefault(e =>
                     e.Id_Message_Attacker == component.Message.Id &&
                     e.Attacker.Id_Discord == component.User.Id &&
-                    !e.choice_attacker.HasValue ||
+                    !e.Choice_Attacker.HasValue ||
                     e.Id_Message_Defender == component.Message.Id &&
                     e.Defender.Id_Discord == component.User.Id &&
-                    !e.choice_defender.HasValue
+                    !e.Choice_Defender.HasValue
                     );
             }
         }
@@ -1023,7 +1027,7 @@ namespace PFC_Bot.Services
 
         private bool FightNeedToBeResolvedUtility(FightEntity fight)
         {
-            return fight.choice_attacker.HasValue && fight.choice_defender.HasValue;
+            return fight.Choice_Attacker.HasValue && fight.Choice_Defender.HasValue;
         }
 
 
@@ -1033,39 +1037,39 @@ namespace PFC_Bot.Services
          */
         private Boolean ResolveFightUtility(ref FightEntity fight)
         {
-            switch (fight.choice_attacker)
+            switch (fight.Choice_Attacker)
             {
                 case 'p':
-                    if (fight.choice_defender == 'f')
+                    if (fight.Choice_Defender == 'f')
                     {
                         fight.Winner = fight.Defender;
                         return false;
                     }
-                    else if (fight.choice_defender == 'c')
+                    else if (fight.Choice_Defender == 'c')
                     {
                         fight.Winner = fight.Attacker;
                         return true;
                     }
                     break;
                 case 'f':
-                    if (fight.choice_defender == 'p')
+                    if (fight.Choice_Defender == 'p')
                     {
                         fight.Winner = fight.Attacker;
                         return true;
                     }
-                    else if (fight.choice_defender == 'c')
+                    else if (fight.Choice_Defender == 'c')
                     {
                         fight.Winner = fight.Defender;
                         return false;
                     }
                     break;
                 case 'c':
-                    if (fight.choice_defender == 'p')
+                    if (fight.Choice_Defender == 'p')
                     {
                         fight.Winner = fight.Defender;
                         return false;
                     }
-                    else if (fight.choice_defender == 'f')
+                    else if (fight.Choice_Defender == 'f')
                     {
                         fight.Winner = fight.Attacker;
                         return true;
