@@ -601,7 +601,7 @@ namespace PFC_Bot.Services
 
 
         [SlashCommand("rank", "Liste les 20 meilleurs utilisateurs")]
-        public async Task Rank()
+        public async Task Rank(bool ephemeral = false)
         {
             List<UserEntity> users = _db.Users.OrderByDescending(x => x.Score).Take(20).ToList();
 
@@ -615,6 +615,8 @@ namespace PFC_Bot.Services
                     usernames += ":second_place: ";
                 else if (i == 3)
                     usernames += ":third_place: ";
+                else
+                    usernames += $"{i}- ";
                 usernames += $"{user.Pseudo}\n";
                 scores += $"{user.Score}\n";
                 i++;
@@ -641,7 +643,7 @@ namespace PFC_Bot.Services
                 x.IsInline = true;
             });
 
-            await RespondAsync("", embed:builder.Build(), ephemeral: true);
+            await RespondAsync("", embed:builder.Build(), ephemeral: ephemeral);
         }
 
 
