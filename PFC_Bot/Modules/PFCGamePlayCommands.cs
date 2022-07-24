@@ -55,8 +55,19 @@ namespace PFC_Bot.Services
 
             _replayBuilder = new ComponentBuilder()
                 .WithButton("rejouer", "rejouer", style: ButtonStyle.Secondary, emote: new Emoji("\U0001F504"));
-        }
 
+            _discord.UserLeft += async (s, e) =>
+            {
+                // Lorsqu'un utilisateur quite le serveur, on freeze son compte.
+                UserEntity user = _db.Users.SingleOrDefault(u => u.Id_Discord == ((SocketGuild)s).CurrentUser.Id);
+                if(user != null)
+                {
+                    user.Freeze = true;
+                    _db.SaveChanges();
+                }
+            };
+
+        }
 
 
 
@@ -546,9 +557,9 @@ namespace PFC_Bot.Services
         {
 
             List<ulong> connectedList = new List<ulong>();
+            List<ulong> notConnectedList = new List<ulong>();
             if (Context.Guild != null)
             {
-                
                 List<IReadOnlyCollection<IGuildUser>> usersGuild = await Context.Guild.GetUsersAsync().ToListAsync();
 
 
@@ -559,6 +570,10 @@ namespace PFC_Bot.Services
                         if(user.Status == UserStatus.Online && !user.IsBot)
                         {
                             connectedList.Add(user.Id);
+                        }
+                        else if(!user.IsBot)
+                        {
+                            notConnectedList.Add(user.Id);
                         }
                     }
                 }
@@ -575,11 +590,17 @@ namespace PFC_Bot.Services
                         $"{user.Pseudo}\n" :
                         $"<@{user.Id_Discord}>\n";
                 }
-                else
+                else if(notConnectedList.Contains(user.Id_Discord))
                 {
                     usernames += Context.Guild == null ?
                         $"{user.Pseudo}\n" :
                         $"<@{user.Id_Discord}>\n";
+                }
+                else
+                {
+                    usernames += Context.Guild == null ?
+                        $"{user.Pseudo}\n" :
+                        $"{user.Pseudo}\n";
                 }
             }
 
