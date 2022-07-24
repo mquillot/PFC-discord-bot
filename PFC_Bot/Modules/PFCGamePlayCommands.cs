@@ -1037,9 +1037,37 @@ namespace PFC_Bot.Services
 
 
 
+        [SlashCommand("test-gif", "permet de tester si l'url de votre gif fonctionne")]
+        [RequireSignUp()]
+        public async Task TestGif(String url, bool onMessage = false)
+        {
+            EmbedBuilder embed_builder;
+            if(onMessage)
+            {
+                embed_builder = new EmbedBuilder()
+                {
+                    Color = Color.Green,
+                    Title = $"Test de votre gif",
+                    Description = $"Si vous ne voyez pas votre gif – il charge indéfiniment par exemple – c'est certainement que Discord n'arrive pas à l'afficher dans un *embed* avec cette adresse-là. Veuillez essayer avec une autre adresse. Je vous conseille d'aller sur Giphy, de trouver un gif et d'appuyer d'abord sur le bouton \"Share\" puis sur le bouton \"Copy GIF Link\".\n{url}"
+                };
+            }
+            else
+            {
+                embed_builder = new EmbedBuilder()
+                {
+                    Color = Color.Green,
+                    Title = $"Test de votre gif",
+                    Description = "Si vous ne voyez pas votre gif – il charge indéfiniment par exemple – c'est certainement que Discord n'arrive pas à l'afficher dans un *embed* avec cette adresse-là. Veuillez essayer avec une autre adresse. Je vous conseille d'aller sur Giphy, de trouver un gif et d'appuyer d'abord sur le bouton \"Share\" puis sur le bouton \"Copy GIF Link\".",
+                    ImageUrl = url
+                };
+            }
+
+            await RespondAsync("", embed: embed_builder.Build(), ephemeral: true);
+        }
 
 
-        private FightEntity SearchFightOfComponentUtility(SocketMessageComponent component, bool fightFinished=false)
+
+            private FightEntity SearchFightOfComponentUtility(SocketMessageComponent component, bool fightFinished=false)
         {
             if(fightFinished)
             {
