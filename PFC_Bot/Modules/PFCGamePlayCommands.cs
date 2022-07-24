@@ -461,11 +461,11 @@ namespace PFC_Bot.Services
 
             if (fight != null)
             {
-                await RespondAsync($"Vous avez déjà un combat avec {username}");
+                await RespondAsync($"Vous avez déjà un combat avec {username}", ephemeral: true);
                 return;
             }
 
-            await RespondAsync("Votre combat a bien été envoyé !");
+            await RespondAsync("Votre combat a bien été envoyé !", ephemeral: true);
 
             FightEntity new_fight = new FightEntity();
             new_fight.Attacker = user_attacker;
