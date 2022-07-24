@@ -682,13 +682,37 @@ namespace PFC_Bot.Services
 
             UserEntity user = _db.Users.SingleOrDefault(e => e.Id_Discord == Context.User.Id);
 
-            String message = "Liste des combats en cours :\n";
+            String message_sent = ":crossed_swords: Combats envoyés :\n";
+            String message_received = ":shield: Combats reçus :\n";
+            int nb_fight_sent = 0;
+            int nb_fight_received = 0;
             //Console.Out.WriteLine($"Le nombre d'éléments : {fights.Count}");
             foreach(FightEntity fight in fights)
             {
                 string fightUrl = fight.Attacker.Id == user.Id ? fight.Jump_Url_Attacker: fight.Jump_Url_Defender;
+                string fightPseudo = fight.Attacker.Id == user.Id ? fight.Defender.Pseudo : fight.Attacker.Pseudo;
                 //Console.Out.WriteLine($"{fight.Attacker.Id} : {fight.Attacker.Pseudo} ({fight.choice_attacker}) <=> {fight.Defender.Pseudo} ({fight.choice_defender})");
-                message += $"{fight.Attacker.Pseudo} <=> {fight.Defender.Pseudo} : [Lien vers le combat]({fightUrl})" + "\n";
+
+                String message_to_add = $"[{fightPseudo}]({fightUrl})" + "\n";
+                if (fight.Attacker.Id == user.Id)
+                {
+                    message_sent += message_to_add;
+                    nb_fight_sent++;
+                }
+                else
+                {
+                    message_received += message_to_add;
+                    nb_fight_received++;
+                }
+            }
+
+            if(nb_fight_sent == 0)
+            {
+                message_sent += "Aucun";
+            }
+            if(nb_fight_received == 0)
+            {
+                message_received += "Aucun";
             }
 
 
@@ -697,7 +721,7 @@ namespace PFC_Bot.Services
                 //Optional color
                 Title = $"Vous avez {fights.Count} combats en cours",
                 Color = Color.Green,
-                Description = message
+                Description = message_sent + "\n" + message_received
             };
 
             await RespondAsync("", embed: builder.Build());
@@ -899,7 +923,7 @@ namespace PFC_Bot.Services
 
 
 
-        [SlashCommand("s0cattack", "coûte 20 papoules, enlève 100 points à la cible")]
+        [SlashCommand("s0cattack", "coûte 1 papoules, enlève 5 points à la cible et vous en enlève 5 aussi")]
         [RequireSignUp()]
         public async Task Socattack([Autocomplete(typeof(UsernameAutocompleteHandler))] string username)
         {
@@ -949,19 +973,11 @@ namespace PFC_Bot.Services
 
             await RespondAsync("", embed: embedBuilder.Build(), ephemeral: true);
 
-            // TODO: envoyer un message (une notification) à l'utilisateur ciblé.
-
             IMessageChannel channelTarget = await getMessageChannelUtility(targetUser.Id_Discord, null, true);
-
-
-            // TODO: envoyer un message sur le wallofepicness
             Embed embedTarget = new EmbedBuilder()
             {
                 Description = $"{user.Pseudo} vous a s0ckattaqué !"
             }.Build();
-
-
-
             await NotifyUser(targetUser, channelTarget, embedTarget);
 
             ITextChannel chan = (ITextChannel)await _discord.GetChannelAsync(_settings.GetValue<ulong>("chans:wallOfEpicness"));
@@ -998,7 +1014,6 @@ namespace PFC_Bot.Services
 
             if (targetUser.Score < scoreLoss)
             {
-
                 await RespondAsync($"Votre cible doit avoir au moins {scoreLoss} à perdre.", ephemeral: true);
                 return;
             }
@@ -1009,11 +1024,13 @@ namespace PFC_Bot.Services
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
             {
-                Description = $"Vous avez bien utilisé le big-s0cattack sur {targetUser.Pseudo}"
+                Description = $"Vous avez bien utilisé la big-s0cattack sur {targetUser.Pseudo}"
             };
 
             await RespondAsync("", embed: embedBuilder.Build(), ephemeral: true);
 
+            ITextChannel chan = (ITextChannel)await _discord.GetChannelAsync(_settings.GetValue<ulong>("chans:wallOfEpicness"));
+            await chan.SendMessageAsync($"<@{user.Id_Discord}> a big-s0cattacké <@{targetUser.Id_Discord}> ! :sob:");
         }
 
 
