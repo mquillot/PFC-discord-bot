@@ -510,7 +510,7 @@ namespace PFC_Bot.Services
         }
 
 
-        [SlashCommand("signup", "Permet de s'inscrire")]
+        [SlashCommand("signup", "Permet de s'inscrire au jeu en donnant son pseudo")]
         [RequireNotSignUp()]
         public async Task SignUp([StringSizedParameter(5, 20, false)][NoSpecialCharacterParameter()]string username)
         {
@@ -721,7 +721,12 @@ namespace PFC_Bot.Services
                 //Optional color
                 Title = $"Vous avez {fights.Count} combats en cours",
                 Color = Color.Green,
-                Description = message_sent + "\n" + message_received
+                Description = message_sent + "\n" + message_received,
+                Url = "https://www.twitch.tv/stillinbed",
+                Footer = new EmbedFooterBuilder() {
+                    IconUrl = "https://static-cdn.jtvnw.net/jtv_user_pictures/3aa40a4d-12cb-49aa-94f7-2af93d8fe7eb-profile_image-70x70.png",
+                    Text = "join StillinBed on Twitch"
+                }
             };
 
             await RespondAsync("", embed: builder.Build());
