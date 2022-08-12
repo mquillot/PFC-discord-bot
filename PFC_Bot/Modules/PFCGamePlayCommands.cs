@@ -548,8 +548,79 @@ namespace PFC_Bot.Services
             _db.SaveChanges();
 
 
-            await RespondAsync($"Tu as bien été inscrit en tant que {used_username}");
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+            {
+                Title = "Inscription réussie !",
+                Description = $"Jeune Pillow, tu as bien réussi à t'inscrire en tant que {used_username} :partying_face:. Voici quelques rudimentaires pour apprendre à jouer.\n\n" +
+                $"Tout d'abord, sâche que tu peux lancer des combats de pierre-feuille-ciseaux contre des gens. Il suffit pour ça d'utiliser la commande attack comme ci-dessous :\n" +
+                $"```/attack [pseudo du joueur à attaquer]```\n" +
+                $"\n" +
+                $"Chaque fois que tu gagnes, tu récupères 1 papoule, c'est ta monnaie ! Grâce aux papoules tu peux lancer des sorts sur les autres joueurs comme la s0ckattack :\n" +
+                $"```/s0cattack [pseudo du joueur cible]```\n" +
+                $"\n" + 
+                $"Tu peux aussi consulter ton profil !\n" +
+                $"```/my-profile```\n" +
+                $"Si tu veux flex sur un de tes potes, tu peux utiliser cette commande (directement sur le serveur :wink:)\n" +
+                $"```/stats-with [pseudo du joueur cible]```\n" +
+                $"\n"
+            };
+
+            await RespondAsync("", embed: embedBuilder.Build());
         }
+
+
+
+
+
+        [SlashCommand("test-signup", "Un test pour voir le message de signup")]
+        [RequireNotSignUp()]
+        public async Task testSignUp()
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+            {
+                Title = "Inscription réussie !",
+                Description = "Jeune Pillow, tu as bien réussi à t'inscrire en tant que {used_username} :partying_face:. Voici quelques rudimentaires pour apprendre à jouer.\n\n" +
+                $"Tout d'abord, sâche que tu peux lancer des combats de pierre-feuille-ciseaux contre des gens. Il suffit pour ça d'utiliser la commande attack comme ci-dessous :\n" +
+                $"```/attack [pseudo du joueur à attaquer]```\n" +
+                $"\n" +
+                $"Chaque fois que tu gagnes, tu récupères 1 papoule, c'est ta monnaie ! Grâce aux papoules tu peux lancer des sorts sur les autres joueurs comme la s0ckattack :\n" +
+                $"```/s0cattack [pseudo du joueur cible]```\n" +
+                $"\n" +
+                $"Tu peux aussi consulter ton profil !\n" +
+                $"```/my-profile```\n" +
+                $"Si tu veux flex sur un de tes potes, tu peux utiliser cette commande (directement sur le serveur :wink:)\n" +
+                $"```/stats-with [pseudo du joueur cible]```\n" +
+                $"\n"
+            };
+
+            await RespondAsync("", embed: embedBuilder.Build());
+        }
+
+
+
+
+        [SlashCommand("test-joined-server", "Un test pour voir le message lorsque quelqu'un rejoint le serveur")]
+        [RequireNotSignUp()]
+        public async Task testJoinedServer()
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+            {
+                Title = "Bonjour jeune futur Pillow",
+                Description = $"Je suis le bot du Pierre-Feuille-Ciseaux (PFC-Bot) et tu viens de rejoindre le serveur de StillinBed.\n\nSur ce serveur, nous jouons toutes et tous (ou presque) au PFC. Quand tu t'embrouilles avec quelqu'un, allez hop un PFC et il n'y a plus d'embrouille ! Quand tu ne t'embrouilles pas avec quelqu'un, allez hop un PFC et tu t'embrouilles avec cette personne ! **Le PFC est vraiment la solution à tous tes problème alors n'attends plus pour jouer !**\n" +
+                $"\nConvaincu(e) ? Tu veux jouer avec nous ?\n" +
+                $"\n[Là, tu réponds oui :rolling_eyes:]\n" +
+                $"\nSuper ! :sunglasses: Pour jouer, rien de plus simple, il faut d'abord que tu t'enregistres auprès de moi. Je t'expliquerai le reste ensuite. :wink:\n" +
+                $"Pour t'enregistrer, tu dois m'écrire la commande suivante, en remplaçant \"[ton pseudo]\" par le pseudo que tu veux avoir dans le jeu " +
+                $"```/signup [ton pseudo]```\n" +
+                $"\nTu vois, c'est super simple !\n" +
+                $"Allez ! À de suite !",
+                ImageUrl = "https://media.giphy.com/media/l49JLqDArrAoVy4wM/giphy.gif"
+            };
+
+            await RespondAsync("", embed: embedBuilder.Build());
+        }
+
+
 
 
         [SlashCommand("users", "Liste les utilisateurs")]
@@ -1072,7 +1143,22 @@ namespace PFC_Bot.Services
 
 
 
-            private FightEntity SearchFightOfComponentUtility(SocketMessageComponent component, bool fightFinished=false)
+
+        [SlashCommand("play", "permet de jouer pour la première fois")]
+        [RequireSignUp()]
+        public async Task Play(Boolean ephemeral=true)
+        {
+
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+            {
+                Title = "Comment jouer au Pierre-Feuille-Ciseaux ?",
+                Description = "Tu veux jouer au PFC-Bot ? Rien de plus simple, pour cela, il suffit d'envoyer un message privé à <@698934530987262022> et à lui écrire la commande suivante en remplaçant \"[ton pseudo]\" par le pseudo que tu souhaites avoir sur le jeu :\n" +
+                "```/signup [ton pseudo]```\n"
+            };
+            await RespondAsync("", embed:embedBuilder.Build(), ephemeral:ephemeral);
+        }
+
+        private FightEntity SearchFightOfComponentUtility(SocketMessageComponent component, bool fightFinished=false)
         {
             if(fightFinished)
             {
