@@ -67,6 +67,27 @@ namespace PFC_Bot.Services
                 }
             };
 
+            _discord.UserJoined += async (e) =>
+            {
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                {
+                    Title = "Bonjour jeune futur Pillow",
+                    Description = $"Je suis le bot du Pierre-Feuille-Ciseaux (PFC-Bot) et tu viens de rejoindre le serveur de StillinBed.\n\nSur ce serveur, nous jouons toutes et tous (ou presque) au PFC. Quand tu t'embrouilles avec quelqu'un, allez hop un PFC et il n'y a plus d'embrouille ! Quand tu ne t'embrouilles pas avec quelqu'un, allez hop un PFC et tu t'embrouilles avec cette personne ! **Le PFC est vraiment la solution à tous tes problème alors n'attends plus pour jouer !**\n" +
+                    $"\nConvaincu(e) ? Tu veux jouer avec nous ?\n" +
+                    $"\n[Là, tu réponds oui :rolling_eyes:]\n" +
+                    $"\nSuper ! :sunglasses: Pour jouer, rien de plus simple, il faut d'abord que tu t'enregistres auprès de moi. Je t'expliquerai le reste ensuite. :wink:\n" +
+                    $"Pour t'enregistrer, tu dois m'écrire la commande suivante, en remplaçant \"[ton pseudo]\" par le pseudo que tu veux avoir dans le jeu " +
+                    $"```/signup [ton pseudo]```\n" +
+                    $"\nTu vois, c'est super simple !\n" +
+                    $"Allez ! À de suite !",
+                    ImageUrl = "https://media.giphy.com/media/l49JLqDArrAoVy4wM/giphy.gif"
+                };
+
+                await e.SendMessageAsync("", embed: embedBuilder.Build());
+                
+            };
+              
+
         }
 
 
