@@ -83,6 +83,7 @@ namespace PFC_Bot.Services
                     ImageUrl = "https://media.giphy.com/media/l49JLqDArrAoVy4wM/giphy.gif"
                 };
 
+                Console.Out.WriteLine("This is called!");
                 await e.SendMessageAsync("", embed: embedBuilder.Build());
                 
             };
